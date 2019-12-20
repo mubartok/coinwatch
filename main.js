@@ -10,11 +10,7 @@ const fetch = require('electron-fetch');
 
 const defaultConfig = {
     refresh: 150000, // 2.5 minutes
-    coins: [
-        "bitcoin",
-        "ethereum",
-        "ripple"
-    ]
+    coins: ['bitcoin', 'ethereum', 'ripple'],
 };
 
 function button(coinName, price) {
@@ -30,38 +26,41 @@ function button(coinName, price) {
         icon: iconPath,
         iconPosition: 'left',
         click: () => {
-          let win = new BrowserWindow({width: 900, height: 800})
-          win.on('closed', () => {
-            win = null
-          })
+            let win = new BrowserWindow({ width: 900, height: 800 });
+            win.on('closed', () => {
+                win = null;
+            });
 
-          // Load a remote URL
-          win.loadURL('https://coinmarketcap.com/currencies/' + coinName)
-        }
+            // Load a remote URL
+            win.loadURL('https://coinmarketcap.com/currencies/' + coinName);
+        },
     });
 }
 
 function touchBar(response, ids) {
-    var buttons =
-        response.filter(
-            (coin) => ids.includes(coin.id)
-        ).map(
-            (coin) => button(coin.id, coin.price_usd));
+    var buttons = response
+        .filter((coin) => ids.includes(coin.id))
+        .map((coin) => button(coin.id, coin.price_usd));
 
-    return new TouchBar(
-        buttons.filter((b) => b !== null));
+    return new TouchBar(buttons.filter((b) => b !== null));
 }
 
 function createWindow(config) {
     // Create the browser window.
-    win = new BrowserWindow({ width: 500, height: 260, icon: path.join(__dirname, '/img/logo.png') });
+    win = new BrowserWindow({
+        width: 500,
+        height: 260,
+        icon: path.join(__dirname, '/img/logo.png'),
+    });
 
     // and load the index.html of the app.
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
+    win.loadURL(
+        url.format({
+            pathname: path.join(__dirname, 'index.html'),
+            protocol: 'file:',
+            slashes: true,
+        })
+    );
 
     // Open the DevTools.
     //win.webContents.openDevTools();
@@ -76,8 +75,12 @@ function createWindow(config) {
 
     var refresh = () => {
         fetch('https://api.coinmarketcap.com/v1/ticker/?limit=20')
-        .then((res) => { return res.json(); }
-        ).then((json) => { win.setTouchBar(touchBar(json, config.coins)); })
+            .then((res) => {
+                return res.json();
+            })
+            .then((json) => {
+                win.setTouchBar(touchBar(json, config.coins));
+            });
     };
 
     refresh();
@@ -99,6 +102,6 @@ app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-    //    app.quit();
+        //    app.quit();
     }
 });
